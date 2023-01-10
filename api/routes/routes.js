@@ -23,16 +23,16 @@ router.get("/", (req, res) => {
             <li><a style="color: #FFD700; a:link {
               color: #FFD700;
             }"
-            href="https:/lottoapi.herokuapp.com/lotto-results/5"> https:/lottoapi.herokuapp.com/lotto-results/5 </a> - 5 ostatnich wyników Lotto </li> 
+            href="/lotto-results/5"> https:/lottoapi.herokuapp.com/lotto-results/5 </a> - 5 ostatnich wyników Lotto </li> 
             <li><a style="color: #FFD700; a:link {
               color: #FFD700;
-            }" href="https:/lottoapi.herokuapp.com/lottoplus-results/5"> https:/lottoapi.herokuapp.com/lottoplus-results/5 </a> - 5 ostatnich wyników Lotto Plus</li> 
+            }" href="/lottoplus-results/5"> https:/lottoapi.herokuapp.com/lottoplus-results/5 </a> - 5 ostatnich wyników Lotto Plus</li> 
             <li><a  style="color: #FFD700; a:link {
               color: #FFD700;
-            }" href="https:/lottoapi.herokuapp.com/minilotto-results/5"> https:/lottoapi.herokuapp.com/minilotto-results/5 </a> - 5 ostatnich wyników Mini Lotto</li>
+            }" href="/minilotto-results/5"> https:/lottoapi.herokuapp.com/minilotto-results/5 </a> - 5 ostatnich wyników Mini Lotto</li>
             <li><a style="color: #FFD700; a:link {
               color: #FFD700;
-            }" href="https:/lottoapi.herokuapp.com/eurojackpot-results/5"> https:/lottoapi.herokuapp.com/eurojackpot-results/5 </a> - 5 ostatnich wyników Eurojackpot</li>
+            }" href="/eurojackpot-results/5"> https:/lottoapi.herokuapp.com/eurojackpot-results/5 </a> - 5 ostatnich wyników Eurojackpot</li>
             </ul>
             <p> Ponadto API umozliwia tworzenie kont uzytkownikow i przechwywanie w nim kuponów: </p>
             <ul>
