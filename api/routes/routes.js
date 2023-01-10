@@ -36,17 +36,19 @@ router.get("/", (req, res) => {
             </ul>
             <p> Ponadto API umozliwia tworzenie kont uzytkownikow i przechwywanie w nim kuponów: </p>
             <ul>
-            <li><p> router.post("/users/create", ...) obsługuje żądanie utworzenia nowego użytkownika. Pobiera pola nick i name z ciała żądania i przechowuje je w zmiennych o tych samych nazwach. Następnie tworzy odniesienie do kolekcji user w bazie danych Cloud Firestore i sprawdza, czy użytkownik o podanym nick już istnieje. Jeśli taki użytkownik nie istnieje, tworzy nowy dokument w kolekcji user z podanymi polami nick i name. Jeśli użytkownik o podanym nick już istnieje, zwraca odpowiedź z kodem statusu 400 (Bad Request) i komunikatem informującym, że użytkownik już istnieje</p></li>
+            <li><p> router.post("/users/create", ...) obsługuje żądanie utworzenia nowego użytkownika. </p></li>
 
-            <li><p> router.delete("/users/:nick", ...) obsługuje żądanie usunięcia użytkownika. Tworzy odniesienie do kolekcji user w bazie danych Cloud Firestore i próbuje usunąć użytkownika o nick określonym w parametrach żądania. Jeśli taki użytkownik nie istnieje, zwraca odpowiedź z kodem statusu 400 (Bad Request) i komunikatem informującym, że użytkownik nie istnieje. Jeśli użytkownik istnieje, jest usuwany i zwracana jest odpowiedź z kodem statusu 201 (Created) i komunikatem informującym, że użytkownik został usunięty.</p></li>
+            <li><p> router.delete("/users/:nick", ...) obsługuje żądanie usunięcia użytkownika. </p></li>
 
-            <li><p> router.get("/users/:nick", ...) obsługuje żądanie wyswietlenia danych uzytkownika. Tworzy odniesienie do kolekcji user w bazie danych Cloud Firestore i próbuje znaleźć użytkownika o nick określonym w parametrach żądania. Jeśli taki użytkownik nie istnieje, zwraca odpowiedź z kodem statusu 400 (Bad Request) i komunikatem informującym, że użytkownik nie istnieje. Jeśli użytkownik istnieje, wyświetlane są jego dane.</p></li>
+            <li><p> router.get("/users/:nick", ...) obsługuje żądanie wyswietlenia danych uzytkownika. </p></li>
 
-            <li><p> router.post("/users/:nick/tickets/create", ...) obsługuje żądanie utworzenia nowego kuponu. Pobiera pola ticketNumber, numbers, type i userNick z ciała żądania i przechowuje je w zmiennych o tych samych nazwach. Następnie tworzy odniesienie do kolekcji ticket w bazie danych Cloud Firestore i sprawdza, czy kupon o podanym ticketNumber już istnieje. Jeśli taki kupon nie istnieje, tworzy nowy dokument w kolekcji ticket z podanymi polami ticketNumber, numbers, type i userNick. Jeśli kupon o podanym ticketNumber już istnieje, zwraca odpowiedź z kodem statusu 400 (Bad Request) i komunikatem informującym, że kupon już istnieje</p></li>
+            <li><p> router.post("/users/:nick/tickets/create", ...) obsługuje żądanie utworzenia nowego kuponu. </p></li>
 
-            <li><p> router.delete("/users/:nick/tickets/:id", ...) obsługuje żądanie usunięcia kuponu. Tworzy odniesienie do kolekcji ticket w bazie danych Cloud Firestore i próbuje usunąć kupon o id określonym w parametrach żądania. Jeśli taki kupon nie istnieje, zwraca odpowiedź z kodem statusu 400 (Bad Request) i komunikatem informującym, że kupon nie istnieje. Jeśli kupon istnieje, jest usuwany i zwracana jest odpowiedź z kodem statusu 201 (Created) i komunikatem informującym, że kupon został usunięty.</p></li>
+            <li><p> router.delete("/users/:nick/tickets/:id", ...) obsługuje żądanie usunięcia kuponu </p></li>
 
-            <li><p> router.get("/users/:nick/tickets", ...) obsługuje żądanie pobrania wszystkich kuponów użytkownika. Tworzy odniesienie do kolekcji ticket w bazie danych Cloud Firestore i pobiera wszystkie kuponu użytkownika o nick określonym w parametrach żądania. Jeśli użytkownik nie istnieje, zwraca odpowiedź z kodem statusu 400 (Bad Request) i komunikatem informującym, że użytkownik nie istnieje. Jeśli użytkownik istnieje, zwracana jest odpowiedź z kodem statusu 200 (OK) i listą kuponów użytkownika.</p></li>
+            <li><p> router.get("/users/:nick/tickets", ...) obsługuje żądanie pobrania wszystkich kuponów użytkownika </p></li>
+
+            <li><p> router.put("/users/:nick", ...) obsługuje ządzanie zmiany nazwy uzytkownika o podanym nicku. 
 
 
           </body>
@@ -142,6 +144,50 @@ router.get("/users/:nick", (req, res) => {
       .json({ general: "Coś poszło nie tak, spróbuj ponownie poźniej!" });
   }
 });
+
+//aktualizacja imienia uzytkownika o podanym nicku
+router.put("/users/:nick", (req, res) => {
+  const userRef = db.collection("user");
+  try {
+    userRef
+      .where("nick", "==", req.params.nick)
+      .get()
+      .then(
+        (snapshot) => {
+          if (snapshot.empty) {
+            return res
+              .status(400)
+              .json({ message: `Uzytkownik ${req.params.nick} nie istnieje!` });
+          } else {
+            userRef
+              .where("nick", "==", req.params.nick)
+              .get()
+              .then((snapshot) => {
+                snapshot.forEach((doc) => {
+                  doc.ref.update({
+                    name: req.body.name,
+                  });
+                });
+              })
+              .catch((error) => {
+                return res.status(500).json({ error: error });
+              });
+            return res
+              .status(201)
+              .json({ message: `Imie uzytkownika ${req.params.nick} zostało zmienione!` });
+          }
+        }
+      )
+      .catch((error) => {
+        return res.status(500).json({ error: error });
+      });
+  } catch (error) {
+    return res  
+      .status(500)
+      .json({ general: "Coś poszło nie tak, spróbuj ponownie poźniej!" });
+  }
+});
+
 
 //dodanie kuponu dla uzytkownika przed dodaniem sprawdz czy istnieje juz kupon o takim samym ticketNumber
 router.post("/users/:nick/tickets/create", (req, res) => {
@@ -254,6 +300,9 @@ router.delete("/users/:nick/tickets/:id", (req, res) => {
       .json({ general: "Coś poszło nie tak, spróbuj ponownie poźniej!" });
   }
 });
+
+
+/////////////////
 
 // wyniki lotto plus
 router.get("/lottoplus-results/:number?", (req, res) => {
