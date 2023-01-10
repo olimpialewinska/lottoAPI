@@ -195,6 +195,7 @@ router.post("/users/:nick/tickets/create", (req, res) => {
   const couponRef = db.collection("tickets");
   const ticketNumber = req.body.ticketNumber;
   const userNick = req.params.nick;
+  const numbers = req.body.numbers;
   try {
     couponRef
       .where("ticketNumber", "==", ticketNumber)
@@ -205,6 +206,7 @@ router.post("/users/:nick/tickets/create", (req, res) => {
             .add({
               ticketNumber: ticketNumber,
               userNick: userNick,
+              numbers: numbers
             })
             .then((docRef) => {
               return res
